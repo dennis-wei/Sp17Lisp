@@ -1,0 +1,88 @@
+
+; 1.1
+; ---
+
+(mapcar (lambda(x) (string-upcase (reverse x))) '("hello" "goodbye" "today"))
+
+; 1.2
+; ---
+
+(defun avg (&rest args)
+	(float (/ (apply #'+ args) (length args))))
+
+; 1.3
+; ---
+
+(defun get-first (l)
+	(cond
+		((atom l) l)
+		(t (get-first (first l)))))
+
+(defun get-string (x)
+	(cond
+		((typep x 'string) x)
+		(t (write-to-string x))))
+
+(defun sort-rec (a b)
+	(string-lessp (get-string (get-first a)) (get-string (get-first b))))
+
+(defun abc (l)
+	(sort (copy-list l) #'sort-rec))
+
+; 1.4
+; ---
+
+(defun powerset (l) 
+	(if l (mapcan (lambda (x) (list (cons (car l) x) x)) 
+		(powerset (cdr l))) '(())))
+
+; 2.1
+; ---
+
+(defun my-time (al)
+	(mapcar (lambda(x) (format t "TIMING: ~s" x) (time (eval x))) al))
+
+(defmacro time-many (&rest args)
+	`(progn ,@(my-time args))
+)
+
+; 2.2
+; ---
+(defmacro for ((var start stop &optional (incr 1)) &body body)
+	`(do ((,var ,start (+ ,incr ,var)))
+		((> ,var ,stop))
+	,@body))
+
+; 3.1
+; ---
+
+(defmethod move ((ob shape-mixin) dx dy)
+	(setf (get-x-pos ob) (+ (get-x-pos ob) dx))
+	(setf (get-y-pos ob) (+ (get-y-pos ob) dy)))
+
+(defmethod move ((self combo-shape) dx dy)
+	(dolist (sub (get-shapes self))
+		(move sub dx dy))
+	self)
+
+(defun test-svg-1 (file)
+  (let ((new (copy *face*)) (new-move (move (copy *face*) 200 0)))
+    (write-to-svg file (list new new-move))))
+
+; 3.2
+; ---
+
+(defmethod convert-to-grayscale ((ob color-mixin))
+  	(let ((avg (/ (+ (get-red (get-color ob)) (get-green (get-color ob)) (get-blue (get-color ob))) 3)))
+    	(setf (get-red (get-color ob)) avg)
+    	(setf (get-green (get-color ob)) avg)
+    	(setf (get-blue (get-color ob)) avg)))
+
+(defmethod convert-to-grayscale ((self combo-shape))
+	(dolist (sub (get-shapes self))
+		(convert-to-grayscale sub))
+	self)
+
+(defun test-svg-2 (file)
+  (let ((new (copy *face*)) (new-move (convert-to-grayscale (move (copy *face*) 200 0))))
+    (write-to-svg file (list new new-move))))

@@ -1,0 +1,3 @@
+I will be working with Andrew De Angelis (ajd2195) to build a two player game of pong in Lisp. We believe we can accomplish this using some basic graphics while implementing a relatively basic physics system for the ball itself. In addition, we will incorporate a scoring system, and as stretch goals, we can add things such as power-ups, more complicated physics (i.e. based on where the ball hits the paddle), and user customized settings within a menu. Lastly, we can potentially add an AI to create a one player experience.
+
+There’s other areas we can potentially look into, such as programmatically generated audio, visual flair, etc. but we would prefer to keep things to the basics to begin with.
